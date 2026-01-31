@@ -49,6 +49,7 @@ def ChooseAct():
 
 
 def Add():
+    clear()
     name = input_dialog(
         title='Input a name for your shortcut',
         text='Please type your name:').run()
@@ -110,6 +111,7 @@ def Add():
 
 
 def Remove():
+    clear()
     print("We've entered the remove function, say hi to it !!")
     print("Remove action")
     style = Style.from_dict(
