@@ -21,6 +21,7 @@ src = "/home/leozin/.local/share/applications"
 Path = Path(src)
 result = ""
 clear = lambda: os.system('clear')
+clear()
 #TODO: Pess [Q] to quit
 def ChooseAct():
     style = Style.from_dict(
@@ -142,9 +143,9 @@ def Remove():
         os.remove(delete_opt)
         clear()
         print("Deleted file:" + delete_opt)
-    
-    clear()
-    print("File not deleted.")
+    else:
+        clear()
+        print("File not deleted.")
 
 
 while True:
