@@ -10,8 +10,7 @@ from prompt_toolkit.shortcuts import input_dialog
 import os
 import shutil
 
-
-
+#kitty zsh -c "cd /mnt/Nvme/ShortCutTUI/ ; python3 tui.py"
 #Importa o esqueleto de uma .desktop entry, baseado na archwiki
 Skeleton = open("./example")
 out = Skeleton.read()
@@ -97,7 +96,7 @@ def Add():
 
     if result:
         #isso acontece após finalizada as alterações na string temp
-        with open("temp", "x") as f:
+        with open(src + "/" + name +".desktop", "x") as f:
             f.write(eof)
 
         message_dialog(
@@ -129,9 +128,23 @@ def Remove():
         enable_interrupt=True,
         show_frame=~is_done,
     )
-    os.remove(delete_opt)
+
+    result = button_dialog(
+        title='Double check it',
+        text="Do you really want to delete this entry?",
+        buttons=[
+            ('Yes', True),
+            ('No', False)
+        ],
+    ).run()
+    
+    if result:        
+        os.remove(delete_opt)
+        clear()
+        print("Deleted file:" + delete_opt)
+    
     clear()
-    print("Deleted file:" + delete_opt)
+    print("File not deleted.")
 
 
 while True:
