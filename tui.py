@@ -1,4 +1,4 @@
-from prompt_toolkit import * 
+# from prompt_toolkit import *
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.shortcuts import choice
 from prompt_toolkit.styles import Style
@@ -8,21 +8,31 @@ from prompt_toolkit.shortcuts import button_dialog
 from prompt_toolkit.shortcuts import message_dialog
 from prompt_toolkit.shortcuts import input_dialog
 import os
-import shutil
 
-#kitty zsh -c "cd /mnt/Nvme/ShortCutTUI/ ; python3 tui.py"
-#Importa o esqueleto de uma .desktop entry, baseado na archwiki
+
+# kitty zsh -c "cd /mnt/Nvme/ShortCutTUI/ ; python3 tui.py"
+# Importa o esqueleto de uma .desktop entry, baseado na archwiki
 Skeleton = open("./example")
 out = Skeleton.read()
-if os.path.exists("temp"):
-    os.remove("temp")
 
-src = "/home/leozin/.local/share/applications"
-Path = Path(src)
+home_dir = os.environ.get("HOME") if os.environ.get("HOME") else os.path.expanduser("~")
+
+print(f"Home dir to {home_dir}")
+
+src = f"{home_dir}/.local/share/applications"
+src_path = Path(src)
 result = ""
-clear = lambda: os.system('clear')
+
+
+def clear():
+    # deprecated. must change the way it is done
+    os.system("clear")
+
+
 clear()
-#TODO: Pess [Q] to quit
+
+
+# TODO: Pess [Q] to quit
 def ChooseAct():
     style = Style.from_dict(
         {
@@ -43,71 +53,60 @@ def ChooseAct():
             " Press <b>[Up]</b>/<b>[Down]</b> to select, <b>[Enter]</b> to accept."
         ),
         enable_interrupt=True,
-        show_frame=~is_done,
+        show_frame=not is_done(),
     )
-    return result 
+    return result
 
 
 def Add():
     clear()
     name = input_dialog(
-        title='Input a name for your shortcut',
-        text='Please type your name:').run()
+        title="Input a name for your shortcut", text="Please type your name:"
+    ).run()
 
     comment = input_dialog(
-        title='Input a comment for your shortcut',
-        text='Please type your comment:').run()
+        title="Input a comment for your shortcut", text="Please type your comment:"
+    ).run()
     path = input_dialog(
-        title='Input a path for your shortcut',
-        text='Please type your path:').run()
+        title="Input a path for your shortcut", text="Please type your path:"
+    ).run()
     exec = input_dialog(
-        title='Input the exec command for your shortcut',
-        text='Please type your exec:').run()
-    #icon = input_dialog(
+        title="Input the exec command for your shortcut", text="Please type your exec:"
+    ).run()
+    # icon = input_dialog(
     #    title='Input dialog example',
     #    text='Please type your name:').run()
     terminal = button_dialog(
-        title='Does your shortcut use Terminal?',
-        text='Does your shortcut use Terminal?',
-        buttons=[
-            ('Yes', "True"),
-            ('No', "False")
-        ],
+        title="Does your shortcut use Terminal?",
+        text="Does your shortcut use Terminal?",
+        buttons=[("Yes", "True"), ("No", "False")],
     ).run()
-    #categories = input_dialog(
+    # categories = input_dialog(
     #    title='Input dialog example',
-    #text='Please type your name:').run()
+    # text='Please type your name:').run()
     eof = out
     eof = eof.replace("{Name}", name)
     eof = eof.replace("{Comment}", comment)
     eof = eof.replace("{Path}", path)
     eof = eof.replace("{Exec}", exec)
-    #eof = eof.replace("{Icon}", icon)
-    eof = eof.replace("{Terminal}", terminal) #true or false
-    #eof = eof.replace("{Categories}", categories)
-   
+    # eof = eof.replace("{Icon}", icon)
+    eof = eof.replace("{Terminal}", terminal)  # true or false
+    # eof = eof.replace("{Categories}", categories)
 
     result = button_dialog(
-        title='Double check it',
+        title="Double check it",
         text=eof,
-        buttons=[
-            ('Yes', True),
-            ('No', False)
-        ],
+        buttons=[("Yes", True), ("No", False)],
     ).run()
 
     if result:
-        #isso acontece após finalizada as alterações na string temp
-        with open(src + "/" + name +".desktop", "x") as f:
+        # isso acontece após finalizada as alterações na string temp
+        with open(src + "/" + name + ".desktop", "x") as f:
             f.write(eof)
 
-        message_dialog(
-        title='Mensagem',
-            text='O atalho foi salvo em ' + src).run()
+        message_dialog(title="Mensagem", text="O atalho foi salvo em " + src).run()
     else:
-      message_dialog(
-        title='Mensagem',
-        text='O atalho não foi salvo').run()
+        message_dialog(title="Mensagem", text="O atalho não foi salvo").run()
 
 
 def Remove():
@@ -123,25 +122,22 @@ def Remove():
     )
     delete_opt = choice(
         message="Please choose an option:",
-        options=tuple((str(p.resolve()), p.name) for p in Path.iterdir()),
+        options=tuple((str(p.resolve()), p.name) for p in src_path.iterdir()),
         style=style,
         bottom_toolbar=HTML(
             " Press <b>[Up]</b>/<b>[Down]</b> to select, <b>[Enter]</b> to accept."
         ),
         enable_interrupt=True,
-        show_frame=~is_done,
+        show_frame=not is_done(),
     )
 
     result = button_dialog(
-        title='Double check it',
+        title="Double check it",
         text="Do you really want to delete this entry?",
-        buttons=[
-            ('Yes', True),
-            ('No', False)
-        ],
+        buttons=[("Yes", True), ("No", False)],
     ).run()
-    
-    if result:        
+
+    if result:
         os.remove(delete_opt)
         clear()
         print("Deleted file:" + delete_opt)
@@ -163,8 +159,3 @@ while True:
     if result == "Exit":
         clear()
         os._exit(0)
-
-
-
-
-
